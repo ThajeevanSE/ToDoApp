@@ -40,7 +40,7 @@ public class TaskController {
     public  String deleteTask(@PathVariable Long id)
     {
         taskServices.deleteTask(id);
-        return "tasks";
+        return "redirect:/";
     }
     @GetMapping("/{id}/toggle")
     public String toggleTask(@PathVariable Long id)
