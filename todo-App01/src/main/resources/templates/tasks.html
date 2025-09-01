@@ -4,44 +4,189 @@
     <meta charset="UTF-8">
     <title>ToDo Application</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+
     <style>
+        /*  Animated Gradient Background */
+        body {
+            background: linear-gradient(-45deg, #1e3c72, #2a5298, #6a11cb, #2575fc);
+            background-size: 400% 400%;
+            animation: gradientBG 12s ease infinite;
+            font-family: 'Poppins', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding-top: 40px;
+        }
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /*  Container (Glassmorphism effect) */
+        .container {
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 20px;
+            padding: 40px;
+            width: 100%;
+            max-width: 800px;
+            backdrop-filter: blur(15px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            color: #fff;
+        }
+
+        h1 {
+            font-weight: 700;
+            font-size: 2.5rem;
+            background: linear-gradient(to right, #ff512f, #dd2476);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 20px;
+        }
+
+        /*  Input Styling */
+        input[type="text"] {
+            border: none;
+            border-radius: 15px;
+            padding: 18px;
+            font-size: 1rem;
+            background: rgba(255,255,255,0.2);
+            color: white;
+        }
+
+        input[type="text"]::placeholder {
+            color: rgba(255,255,255,0.7);
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            background: rgba(255,255,255,0.3);
+            box-shadow: 0 0 10px #2575fc;
+        }
+
+        /*  Add Button */
+        button[type="submit"] {
+            border-radius: 15px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            background: linear-gradient(45deg, #ff512f, #dd2476);
+            border: none;
+        }
+        button[type="submit"]:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(221,36,118,0.6);
+        }
+
+        /*  Task Cards */
+        .card {
+            border: none;
+            border-radius: 15px;
+            background: rgba(255,255,255,0.12);
+            color: #fff;
+            transition: all 0.3s ease;
+        }
+        .card:hover {
+            transform: scale(1.02);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+
+        /*  Completed Task */
         .text-strikethrough {
             text-decoration: line-through;
-            color: gray;
+            color: rgba(255,255,255,0.5);
+            font-style: italic;
+        }
+
+        /*  Action Buttons */
+        .btn {
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+        .btn-outline-secondary {
+            border-color: #00c6ff;
+            color: #00c6ff;
+        }
+        .btn-outline-secondary:hover {
+            background: #00c6ff;
+            color: #fff;
+            box-shadow: 0 0 12px #00c6ff;
+        }
+        .btn-outline-danger {
+            border-color: #ff416c;
+            color: #ff416c;
+        }
+        .btn-outline-danger:hover {
+            background: #ff416c;
+            color: #fff;
+            box-shadow: 0 0 12px #ff416c;
+        }
+
+        /*  Dark Mode Support */
+        .dark-mode {
+            background: #121212;
+            color: #eee;
+        }
+        .dark-mode .container {
+            background: rgba(0,0,0,0.7);
+        }
+        .dark-toggle {
+            cursor: pointer;
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            background: rgba(255,255,255,0.15);
+            border-radius: 50%;
+            padding: 10px 14px;
+            font-size: 20px;
+            color: #fff;
+            transition: all 0.3s;
+        }
+        .dark-toggle:hover {
+            background: rgba(255,255,255,0.3);
         }
     </style>
 </head>
 <body>
 
-<div class="mt-5 text-center container">
-    <h1>Todo Application</h1>
+<!-- 🌙 Dark Mode Toggle -->
+<div class="dark-toggle" onclick="toggleDark()">🌙</div>
+
+<div class="container text-center">
+    <h1>🌟 Todo Application 🌟</h1>
 
     <!-- Add Task Form -->
-    <form action="/" method="post" class="row mt-3 justify-content-center">
+    <form action="/" method="post" class="row mt-4 justify-content-center g-2">
         <div class="col-md-8">
-            <input class="form-control form-control-lg" type="text" name="title" placeholder="Add a task" required>
+            <input class="form-control form-control-lg" type="text" name="title" placeholder="Add a new task..." required>
         </div>
-        <div class="col-md-2">
-            <button class="btn btn-primary btn-lg w-100" type="submit">ADD</button>
+        <div class="col-md-3">
+            <button class="btn btn-lg w-100 text-white" type="submit">+ Add Task</button>
         </div>
     </form>
 
     <!-- Task List -->
     <div class="mt-5">
         <th:block th:each="task : ${tasks}">
-            <div class="card mb-2 shadow-sm">
+            <div class="card mb-3 shadow-sm">
                 <div class="card-body d-flex justify-content-between align-items-center">
                     <span th:classappend="${task.completed} ? 'text-strikethrough' : ''"
                           th:text="${task.title}">Task Title</span>
                     <div>
-                        <a th:href="@{/{id}/toggle(id=${task.id})}" class="btn btn-outline-secondary btn-sm">Toggle</a>
-                        <a th:href="@{/{id}/delete(id=${task.id})}" class="btn btn-outline-danger btn-sm">Delete</a>
+                        <a th:href="@{/{id}/toggle(id=${task.id})}" class="btn btn-outline-secondary btn-sm me-2">✔ Toggle</a>
+                        <a th:href="@{/{id}/delete(id=${task.id})}" class="btn btn-outline-danger btn-sm">🗑 Delete</a>
                     </div>
                 </div>
             </div>
         </th:block>
     </div>
 </div>
+
+<script>
+    function toggleDark() {
+        document.body.classList.toggle('dark-mode');
+    }
+</script>
 
 </body>
 </html>
